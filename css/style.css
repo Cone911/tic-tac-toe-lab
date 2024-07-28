@@ -1,0 +1,41 @@
+h1, h2{ 
+    text-align: center;
+}
+
+
+body {
+    background-color: gainsboro;
+    /* Use a system font, if none are available use an available sans-sarif */
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .board {
+    display: flex;
+    flex-wrap: wrap;
+    width: 325px;
+    justify-content: center;
+  }
+  
+  .sqr {
+    width: 30%;
+    aspect-ratio: 1/1;
+    border: 3px solid black;
+    font-size: 64px;
+    text-align: center;
+  }
+
+  button {
+    margin-top: 4vmin;
+    padding: 2vmin;
+    font-size: 18px;
+    border-radius: 2vmin;
+    border: 0.1vmin solid grey;
+    color: grey;
+  }
+  
