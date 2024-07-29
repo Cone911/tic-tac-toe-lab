@@ -1,3 +1,11 @@
+///*-------------------------------- UPDATES: -------------------------------*/
+//VERSION 1.1:
+// Added CSS Styling: font type, colors for tokens.
+// Added confetti for winner.
+// Added highlights for the winning combo squares.
+// Added sound effects for clicks, tie and winning music.
+
+
 /*-------------------------------- Constants --------------------------------*/
 
 const winningCombos = [
@@ -14,6 +22,14 @@ const winningCombos = [
   [2, 4, 6],
 ];
 
+/*----------------------------- AUDIO ---------------------------------------*/
+
+const clickSound = new Audio('/SoundFX/Click(Pen).mp3');
+const tieSound = new Audio('/SoundFX/Windows XP Error.mp3');
+const moneyMusic = new Audio('/SoundFX/Money (Extract).mp3');
+moneyMusic.volume = 0.4;
+tieSound.volume = 0.4;
+
 /*---------------------------- Variables (state) ----------------------------*/
 
 let board = ["", "", "", "", "", "", "", "", ""];
@@ -26,6 +42,8 @@ let tie = false;
 const messageEl = document.getElementById("message");
 const resetBtnEl = document.getElementById("reset-btn");
 const boardEl = document.querySelector(".board");
+const confettiEl = document.getElementById('confetti');
+
 
 /*----------------------------- Event Listeners -----------------------------*/
 
@@ -43,6 +61,11 @@ function init() {
   winner = false;
   tie = false;
   turn = "X";
+
+  clearHighlight(); //Clears Highlighted Winning Combo.
+  moneyMusic.pause(); //Pauses the winning music.
+  moneyMusic.currentTime =  0;
+  
   render();
 }
 
@@ -52,31 +75,44 @@ function render() {
 }
 
 function updateBoard() {
-  board.forEach((element, index) => {
-    board[index] === "X" ? (squareEls[index].textContent = "X") : null;
-    board[index] === "O" ? (squareEls[index].textContent = "O") : null;
-    board[index] === "" ? (squareEls[index].textContent = "") : null;
-  });
-}
+    board.forEach((element, index) => {
+      const square = squareEls[index];
+    
+      square.classList.remove('token-x', 'token-o');
+      if (element === "X") {
+        square.textContent = "X";
+        square.classList.add('token-x');
+      } else if (element === "O") {
+        square.textContent = "O";
+        square.classList.add('token-o');
+      } else if (element === "") {
+        square.textContent = "";
+      }
+    });
+  };
 
 function updateMessage() {
   if (winner === false && tie == false) {
-    messageEl.textContent = `${turn}, it's your turn.`;
+    messageEl.innerHTML = `<span style="color: red; font-size: 54px;">${turn}</span> <-- it's your turn.`;
+    confettiEl.classList.add('hidden');
   }
 
   if (winner === false && tie == true) {
     messageEl.textContent = `It's a tie!`;
+    confettiEl.classList.add('hidden');
+    tieSound.play();
   }
 
   if (winner) {
     messageEl.textContent = `${turn} WINS!`;
+    confettiEl.classList.remove('hidden');
+    moneyMusic.play();
   }
 }
 
 function handleClick(event) {
   if (!event.target.classList.contains("sqr")) return;
 
-  // Index finder.
   const squareIndex = event.target.id;
   if (board[squareIndex] === "X" || board[squareIndex] === "O") {
     return;
@@ -94,7 +130,8 @@ function handleClick(event) {
 }
 
 function placePiece(index) {
-  board[index] = turn;
+    clickSound.play();
+    board[index] = turn;
 }
 
 function checkForWinner() {
@@ -102,10 +139,14 @@ function checkForWinner() {
     if (board[array[0]] !== "") {
       if (
         board[array[0]] == board[array[1]] &&
-        board[array[0]] == board[array[2]]
-      ) {
-        winner = true;
-      }
+        board[array[0]] == board[array[2]]) 
+        {
+            winner = true;
+            squareEls[array[0]].classList.add('highlightWinCombo');
+            squareEls[array[1]].classList.add('highlightWinCombo');
+            squareEls[array[2]].classList.add('highlightWinCombo');
+            
+        }
     }
   });
 }
@@ -122,3 +163,10 @@ function switchPlayerTurn() {
     turn === "X" ? (turn = "O") : (turn = "X");
   }
 }
+
+function clearHighlight() {
+    squareEls.forEach((square) => {
+      square.classList.remove('highlightWinCombo');
+    });
+}
+  
